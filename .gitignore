@@ -1,0 +1,61 @@
+# نسخ هذا المحتوى لحافظة Windows
+$gitignoreContent = @"
+# Dependencies
+/node_modules
+/.expo
+/.expo-shared
+/npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Build
+/web-build
+/dist
+/build
+*.apk
+*.aab
+*.ipa
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Expo
+.expo/
+.expo-shared/
+.expo-web-cache/
+
+# React Native
+android/app/build/
+android/build/
+ios/build/
+ios/Pods/
+*.xcworkspace
+xcuserdata/
+
+# Logs
+*.log
+logs/
+"@
+
+# حفظ الملف
+$gitignoreContent | Out-File -FilePath .gitignore -Encoding UTF8

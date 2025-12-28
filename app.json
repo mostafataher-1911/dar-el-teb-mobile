@@ -1,0 +1,138 @@
+{
+  "expo": {
+    "name": "Dar-El-Teb",
+    "slug": "dar-el-teb",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/LOGO-DARELTEB.png",
+    "scheme": "darelteb",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/LOGO-DARELTEB.png",
+      "backgroundColor": "#FFFFFF",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.darelteb.com",
+      "buildNumber": "2.0.0",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIBackgroundModes": [
+          "remote-notification"
+        ],
+        "NSUserNotificationsUsageDescription": "نحتاج صلاحيات الإشعارات لإرسال التنبيهات والتحديثات المهمة لك",
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait"
+        ],
+        "UISupportedInterfaceOrientations~ipad": [
+          "UIInterfaceOrientationPortrait"
+        ],
+        "UIAppFonts": []
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "associatedDomains": []
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/LOGO-DARELTEB.png",
+        "backgroundColor": "#E6F4FE"
+      },
+      "package": "com.dareelteb.app",
+      "versionCode": 13,
+      "permissions": [
+        "NOTIFICATIONS",
+        "FOREGROUND_SERVICE",
+        "WAKE_LOCK",
+        "CALL_PHONE",
+        "INTERNET",
+        "NOTIFICATIONS",
+        "FOREGROUND_SERVICE",
+        "WAKE_LOCK",
+        "CALL_PHONE",
+        "INTERNET"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "tel"
+            },
+            {
+              "scheme": "https"
+            },
+            {
+              "scheme": "http"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "tel"
+            },
+            {
+              "scheme": "https"
+            },
+            {
+              "scheme": "http"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "minSdkVersion": 24,
+            "enableProguardInReleaseBuilds": true,
+            "extraMavenRepos": [
+              "https://maven.google.com"
+            ],
+            "enableMinifyInReleaseBuilds": true
+          },
+          "ios": {
+            "useFrameworks": "static",
+            "deploymentTarget": "15.1"
+          }
+        }
+      ],
+      "expo-web-browser"
+    ],
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/LOGO-DARELTEB.png"
+    },
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "330b3e1e-4f74-4527-ade6-fd12591c0841"
+      }
+    },
+    "runtimeVersion": "2.0.0"
+  }
+}
