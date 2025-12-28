@@ -53,7 +53,7 @@ const HeaderWithSearch: React.FC<HeaderWithSearchProps> = ({
       return;
     }
 
-    const phoneNumber = "01223649261"; 
+    const phoneNumber = "01116729752"; 
     const appUrl = `whatsapp://send?phone=${phoneNumber}`;
     const webUrl = `https://wa.me/${phoneNumber}`;
 
