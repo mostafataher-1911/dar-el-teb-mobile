@@ -17,7 +17,6 @@ const DeleteAccountButton = () => {
           style: "destructive",
           onPress: async () => {
             try {
-              // ✅ هنا ممكن لاحقًا تضيف API لحذف الحساب فعلاً
               await AsyncStorage.removeItem("token");
               await AsyncStorage.removeItem("isLoggedIn");
 

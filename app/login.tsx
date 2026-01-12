@@ -37,14 +37,14 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🧩 تحويل الأرقام العربية إلى إنجليزية
+ 
   const convertArabicToEnglishNumbers = (input: string) => {
     return input.replace(/[\u0660-\u0669]/g, (d) => {
       return String(d.charCodeAt(0) - 1632);
     });
   };
 
-  // ✅ تسجيل الدخول
+
   const handleLogin = async () => {
     setError("");
     const normalizedPhone = convertArabicToEnglishNumbers(phone);
@@ -65,7 +65,7 @@ export default function LoginScreen() {
         },
         body: JSON.stringify({
           phone: normalizedPhone,
-          fcmToken: "", // Empty token since Firebase is removed
+          fcmToken: "", 
         }),
       });
 
@@ -77,7 +77,7 @@ export default function LoginScreen() {
         await AsyncStorage.setItem("token", data.resource.token);
         await AsyncStorage.setItem("username", data.resource.username);
         await AsyncStorage.setItem("phoneNumber", data.resource.phoneNumber);
-        await AsyncStorage.setItem("isGuest", "false"); // تأكيد أنه ليس ضيف
+        await AsyncStorage.setItem("isGuest", "false"); 
 
         navigation.replace("TabsScreen");
       } else {
@@ -91,10 +91,8 @@ export default function LoginScreen() {
     setLoading(false);
   };
 
-  // ✅ الدخول كضيف
   const handleGuestLogin = async () => {
     try {
-      // حفظ حالة الضيف
       await AsyncStorage.setItem("isGuest", "true");
       await AsyncStorage.setItem("guestUsername", "ضيف");
       
@@ -171,7 +169,6 @@ export default function LoginScreen() {
               )}
             </TouchableOpacity>
 
-            {/* زر الدخول كضيف - تصميم محسن */}
             <View style={styles.guestSection}>
               <View style={styles.divider}>
                 <View style={styles.dividerLine} />
@@ -288,7 +285,6 @@ const styles = StyleSheet.create({
   buttonDisabled: { backgroundColor: "#09BCDB80" },
   buttonText: { color: "#FFFFFF", fontSize: width * 0.045, fontWeight: "bold" },
   buttonTextDisabled: { color: "#FFFFFF80" },
-  // أنماط زر الدخول كضيف المحسنة
   guestSection: {
     width: "100%",
     alignItems: "center",

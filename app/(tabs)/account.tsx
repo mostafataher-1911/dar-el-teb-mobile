@@ -5,7 +5,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import LogoutButton from "@/components/LogoutButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router"; // ✅ لإرجاع المستخدم إلى شاشة تسجيل الدخول
+import { router } from "expo-router";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 
 type UserData = {
@@ -36,18 +36,16 @@ export default class Account extends Component<{}, State> {
       const token = await AsyncStorage.getItem("token");
 
       if (!token) {
-        // console.warn("⚠️ No token found — redirecting to Login");
         Alert.alert("تنبيه", "يجب تسجيل الدخول أولاً", [
           {
             text: "حسناً",
-            onPress: () => router.replace("/login"), // ✅ يرجع المستخدم للـ Login
+            onPress: () => router.replace("/login"), 
           },
         ]);
         this.setState({ loading: false });
         return;
       }
 
-      // console.log("📦 Token found:", token);
 
       const response = await fetch("https://apilab-dev.runasp.net/api/ClientMobile/GetProfile", {
         method: "GET",
@@ -57,14 +55,11 @@ export default class Account extends Component<{}, State> {
         },
       });
 
-      // console.log("📡 Response status:", response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
-        // console.error("❌ Fetch failed:", response.status, errorText);
 
         if (response.status === 401) {
-          // ✅ التوكن منتهي أو غير صالح → يرجعه للـ Login
           await AsyncStorage.removeItem("token");
           router.replace("/login");
         }
@@ -75,7 +70,6 @@ export default class Account extends Component<{}, State> {
 
       const text = await response.text();
       if (!text.trim()) {
-        // console.error("⚠️ Empty response body");
         this.setState({ loading: false });
         return;
       }
@@ -84,15 +78,12 @@ export default class Account extends Component<{}, State> {
       try {
         data = JSON.parse(text);
       } catch (err) {
-        // console.error("❌ JSON parse error:", err, "\nResponse:", text);
         this.setState({ loading: false });
         return;
       }
 
-      // console.log("✅ User Profile Data:", data);
 
       if (!data?.resource) {
-        // console.error("⚠️ Invalid data format:", data);
         this.setState({ loading: false });
         return;
       }
@@ -107,7 +98,6 @@ export default class Account extends Component<{}, State> {
 
       this.setState({ userData: normalized, loading: false });
     } catch (error) {
-      // console.error("🔥 Error fetching profile:", error);
       this.setState({ loading: false });
     }
   }

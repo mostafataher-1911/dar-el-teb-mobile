@@ -9,7 +9,6 @@ export default function ModalScreen() {
     <ThemedView style={styles.container}>
       <ThemedText type="title">This is a modal</ThemedText>
 
-      {/* زرار بيرجع للهوم */}
       <Link href="/" style={styles.link} replace>
         <ThemedText type="link">Go to home screen</ThemedText>
       </Link>

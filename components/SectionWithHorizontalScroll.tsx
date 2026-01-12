@@ -49,12 +49,10 @@ const SectionWithHorizontalScroll: React.FC<SectionWithHorizontalScrollProps> = 
 
   return (
     <View style={[styles.section, { backgroundColor }]}>
-      {/* العنوان */}
       <View style={styles.titleBox}>
         <Text style={styles.title}>{title}:</Text>
       </View>
 
-      {/* ScrollView أفقي */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -67,10 +65,8 @@ const SectionWithHorizontalScroll: React.FC<SectionWithHorizontalScrollProps> = 
             onPress={() => handleCardPress(item)}
             activeOpacity={0.8}
           >
-            {/* الصورة تاخد الجزء العلوي */}
             <Image source={item.image} style={styles.image} resizeMode="cover" />
 
-            {/* البوكس السفلي للنصوص */}
             <View style={styles.textBox}>
               <Text style={styles.label} numberOfLines={2}>{item.label}</Text>
               <View style={styles.coinsRow}>
@@ -125,7 +121,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 100, // الجزء العلوي كله للصورة
+    height: 100, 
   },
   textBox: {
     flex: 1,

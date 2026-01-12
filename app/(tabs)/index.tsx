@@ -35,7 +35,6 @@ export default function HomeScreen() {
         const data = await res.json();
 
         if (data.success && data.resource) {
-          // ✅ نجمع التحاليل حسب الفئة
           interface Lab {
             id: string;
             name: string;
@@ -68,7 +67,6 @@ export default function HomeScreen() {
             });
           });
 
-          // نحولها لمصفوفة sections منظمة
           const groupedArray = Object.keys(grouped).map((categoryName) => ({
             category: { name: categoryName },
             labs: grouped[categoryName],
@@ -108,7 +106,6 @@ export default function HomeScreen() {
     <SafeAreaView edges={["top"]} style={styles.safeArea}> 
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <View style={styles.container}>
-        {/* Header مع ضبط المسافات */}
         <View style={styles.headerContainer}>
           <HeaderWithSearch
             onChangeText={handleSearch}

@@ -62,7 +62,6 @@ export default function UnionDetailsScreen() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.resource) {
-          // 👇 نجمع التحاليل حسب النوع
           const grouped: Record<string, any> = {};
 
           data.resource.forEach((section: any) => {
@@ -71,7 +70,6 @@ export default function UnionDetailsScreen() {
             grouped[categoryName].push(...section.labs);
           });
 
-          // نحول الـ grouped object لمصفوفة جاهزة للعرض
           const groupedArray = Object.keys(grouped).map((key) => ({
             category: { name: key },
             labs: grouped[key],
@@ -90,7 +88,6 @@ export default function UnionDetailsScreen() {
 
   return (
     <>
-      {/* ✅ رأس الصفحة */}
       <SafeAreaView edges={["top"]} style={styles.customHeader}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Animated.View entering={SlideInLeft.duration(400)}>
@@ -112,12 +109,10 @@ export default function UnionDetailsScreen() {
           contentContainerStyle={styles.container}
           showsVerticalScrollIndicator={false}
         >
-          {/* ✅ العنوان والبحث */}
           <View style={styles.headerSection}>
             <Text style={styles.title}>الخصومات المتاحة</Text>
             <Text style={styles.unionName}>{name}</Text>
             
-            {/* ✅ شريط البحث */}
             <View style={styles.searchContainer}>
               <Ionicons name="search" size={20} color="#005FA1" style={styles.searchIcon} />
               <TextInput
@@ -136,7 +131,6 @@ export default function UnionDetailsScreen() {
             </View>
           </View>
 
-          {/* ✅ رسالة إذا ماكانش في نتائج بحث */}
           {filteredLabsData.length === 0 && searchQuery.length > 0 && (
             <View style={styles.noResultsContainer}>
               <Ionicons name="search-outline" size={50} color="#ccc" />
@@ -147,7 +141,6 @@ export default function UnionDetailsScreen() {
             </View>
           )}
 
-          {/* ✅ الأقسام - بدون مسافات جانبية */}
           <View style={styles.sectionsContainer}>
             {filteredLabsData.map((section, index) => (
               <SectionWithHorizontalScroll
@@ -155,10 +148,10 @@ export default function UnionDetailsScreen() {
                 title={section.category?.name}
                 backgroundColor={
                   index % 3 === 0
-                    ? "#001D3CF2"  // اللون الأول
+                    ? "#001D3CF2"  
                     : index % 3 === 1
-                    ? "#005FA1" // اللون الثاني
-                    : "#09BCDB"   // اللون الثالث
+                    ? "#005FA1" 
+                    : "#09BCDB"   
                 }
                 items={section.labs.map((lab: any) => ({
                   id: lab.id,
@@ -171,7 +164,6 @@ export default function UnionDetailsScreen() {
             ))}
           </View>
 
-          {/* ✅ الفوتر */}
           <View style={styles.footerContainer}>
             {/* <Text style={styles.footerValue}>
               📍 العنوان: ش أمام مدرسة الثانوية بنات بجوار مدرسة ميس بيرسون _ ملوي _ المنيا
@@ -237,7 +229,6 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.02,
     textAlign: "center",
   },
-  // ✅ تصميم شريط البحث
   searchContainer: {
     width: "100%",
     height: 50,
@@ -268,7 +259,6 @@ const styles = StyleSheet.create({
   clearButton: {
     padding: 5,
   },
-  // ✅ تصميم عدم وجود نتائج
   noResultsContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -294,10 +284,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
   },
-  // ✅ الأقسام - بدون مسافات جانبية
   sectionsContainer: {
     width: "100%",
-    paddingHorizontal: 0, // ✅ غيرنا من width * 0.04 إلى 0
+    paddingHorizontal: 0,
   },
   footerContainer: {
     marginTop: height * 0.04,

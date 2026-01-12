@@ -28,24 +28,20 @@ export default function SplashScreen() {
 
   useEffect(() => {
     const startTimeout = setTimeout(() => {
-      // حساب أكبر قطر لتغطية الشاشة
       const maxCircleDiameter = Math.sqrt(width * width + height * height);
-      const scaleFactor = maxCircleDiameter / 20; // 20 هو حجم البداية للدائرة
+      const scaleFactor = maxCircleDiameter / 20;
 
-      // 1️⃣ تكبير الدائرة لتغطي الشاشة
       Animated.timing(circleScale, {
         toValue: scaleFactor,
         duration: 2000,
         useNativeDriver: true,
       }).start(() => {
-        // 2️⃣ اختفاء الدائرة تدريجياً
         Animated.timing(circleOpacity, {
           toValue: 0,
           duration: 800,
           useNativeDriver: true,
         }).start();
 
-        // 3️⃣ ظهور اللوجو بعد الدائرة
         Animated.parallel([
           Animated.timing(logoScale, {
             toValue: 1,
@@ -58,7 +54,6 @@ export default function SplashScreen() {
             useNativeDriver: true,
           }),
         ]).start(() => {
-          // 4️⃣ بعد ثانية، إخفاء اللوجو والانتقال للوجن
           setTimeout(() => {
             Animated.parallel([
               Animated.timing(logoOpacity, {
@@ -85,7 +80,6 @@ export default function SplashScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* الدائرة الزرقاء */}
         <Animated.View
           style={[
             styles.circle,
@@ -96,7 +90,6 @@ export default function SplashScreen() {
           ]}
         />
 
-        {/* اللوجو */}
         <Animated.View
           style={[
             styles.logoContainer,

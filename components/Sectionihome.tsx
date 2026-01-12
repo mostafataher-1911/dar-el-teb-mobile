@@ -27,12 +27,10 @@ const Sectioninhome: React.FC<SectioninhomeProps> = ({
 }) => {
   return (
     <View style={[styles.section, { backgroundColor }]}>
-      {/* العنوان */}
       <View style={styles.titleBox}>
         <Text style={styles.title}>{title}</Text>
       </View>
 
-      {/* ScrollView أفقي */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -40,10 +38,8 @@ const Sectioninhome: React.FC<SectioninhomeProps> = ({
       >
         {items.map((item) => (
           <View key={item.id} style={styles.card}>
-            {/* الصورة تاخد الجزء العلوي */}
             <Image source={item.image} style={styles.image} resizeMode="cover" />
 
-            {/* البوكس السفلي للنصوص */}
             <View style={styles.textBox}>
               <Text style={styles.label}>{item.label}</Text>
               <View style={styles.coinsRow}>
@@ -91,7 +87,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 100, // الجزء العلوي كله للصورة
+    height: 100, 
   },
   textBox: {
     flex: 1,

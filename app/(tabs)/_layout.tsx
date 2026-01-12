@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-// شاشاتك - تأكد من المسارات الصحيحة
 import AccountScreen from "./account";
 import UnionsScreen from "./unions";
 import HomeScreen from "./index";
-import LabLocationScreen from "./LabLocationScreen"; // تأكد من أن المسار صحيح
+import LabLocationScreen from "./LabLocationScreen";
 import OffersScreen from "./offers";
 import FavoritesScreen from "./favorites";
 const Tab = createBottomTabNavigator();
@@ -23,7 +21,7 @@ export default function TabsScreen() {
     try {
       const guestStatus = await AsyncStorage.getItem("isGuest");
       setIsGuest(guestStatus === "true");
-      console.log("Guest status:", guestStatus); // للت debugging
+      console.log("Guest status:", guestStatus); 
     } catch (error) {
       console.log("Error checking guest status:", error);
     }
@@ -92,7 +90,6 @@ export default function TabsScreen() {
         }}
       />
 
-      {/* إخفاء حسابي للضيف */}
       {!isGuest && (
         <Tab.Screen
           name="Account"
