@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "805400094638",
+    "project_id": "dar-el-teb-8a2ca",
+    "storage_bucket": "dar-el-teb-8a2ca.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:805400094638:android:8632486d62fe6075640a3f",
+        "android_client_info": {
+          "package_name": "com.darelteb.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHEl1s2X2ZlsqYVc4cxUFPdHbvljY2cJ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

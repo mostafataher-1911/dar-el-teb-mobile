@@ -5,8 +5,8 @@ import { Ionicons } from "@expo/vector-icons";
 export default function LabLocationScreen() {
   const openMaps = async () => {
     try {
-       const latitude = "27.7328894";
-      const longitude = "30.8345151";
+       const latitude = "31.1175442";
+      const longitude = "33.8046228";
       const url = `https://maps.google.com/?q=${latitude},${longitude}`;
       const supported = await Linking.canOpenURL(url);
       
