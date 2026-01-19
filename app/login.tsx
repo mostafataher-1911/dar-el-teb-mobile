@@ -363,7 +363,7 @@
 //   },
 // });
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -375,14 +375,18 @@ import {
   StyleSheet,
   Dimensions,
   ActivityIndicator,
+  Platform,
 } from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import messaging from "@react-native-firebase/messaging";
 import { useNavigation } from "@react-navigation/native";
-import { Platform } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
+
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+import Constants from "expo-constants";
 
 const { width, height } = Dimensions.get("window");
 
@@ -397,6 +401,17 @@ type NavigationProps = NativeStackNavigationProp<
   "LoginScreen"
 >;
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+
 export default function LoginScreen() {
   const navigation = useNavigation<NavigationProps>();
 
@@ -404,107 +419,73 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ إعداد Firebase Cloud Messaging محسن للإنتاج
-  const registerForPushNotificationsAsync = async (): Promise<string> => {
-    try {
-      // طلب صلاحيات الإشعارات
-      const authStatus = await messaging().requestPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+const notificationListener = useRef<Notifications.Subscription | null>(null);
+const responseListener = useRef<Notifications.Subscription | null>(null);
 
-      console.log("🔔 Notification permission:", enabled ? "GRANTED" : "DENIED");
 
-      if (!enabled) {
-        console.log("🚫 Notification permission not granted");
-        return "fallback-token";
-      }
-
-      // جلب FCM Token
-      const fcmToken = await messaging().getToken();
-      console.log("📱 FCM Token:", fcmToken);
-      
-      if (!fcmToken) {
-        console.log("⚠️ No FCM token received");
-        return "fallback-token";
-      }
-
-      // حفظ التوكن في AsyncStorage
-      await AsyncStorage.setItem('fcmToken', fcmToken);
-      
-      // إرسال التوكن للسيرفر
-      await sendTokenToServer(fcmToken);
-      
-      return fcmToken;
-    } catch (err) {
-      console.log("⚠️ Error getting FCM token:", err);
-      return "fallback-token";
+  // ✅ تسجيل الإشعارات + Expo Push Token
+  async function registerForPushNotificationsAsync(): Promise<string | null> {
+    if (!Device.isDevice) {
+      console.log("❌ Must use physical device");
+      return null;
     }
-  };
 
-  // ✅ إرسال التوكن للسيرفر
-  const sendTokenToServer = async (token: string) => {
-    try {
-      const response = await fetch("https://apilab-dev.runasp.net/WeatherForecast/ExpoPush", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token: token,
-          platform: Platform.OS,
-          appVersion: "1.0.1"
-        }),
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== "granted") {
+      console.log("🚫 Permission denied");
+      return null;
+    }
+
+    const token = (
+      await Notifications.getExpoPushTokenAsync({
+        projectId: Constants.expoConfig?.extra?.eas?.projectId,
+      })
+    ).data;
+
+    console.log("📱 Expo Push Token:", token);
+
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
       });
-
-      if (response.ok) {
-        console.log('✅ FCM token sent to server successfully');
-      } else {
-        console.log('⚠️ Failed to send FCM token to server');
-      }
-    } catch (error) {
-      console.log('❌ Error sending FCM token:', error);
     }
-  };
 
+    return token;
+  }
+
+  // 📨 استقبال الإشعارات
   useEffect(() => {
-    // 📩 عندما يضغط المستخدم على إشعار
-    const unsubscribeOnNotificationOpened = messaging().onNotificationOpenedApp((remoteMessage) => {
-      console.log("🔔 Notification opened app:", remoteMessage);
-      if (remoteMessage?.data?.screen) {
-        navigation.replace("TabsScreen");
-      }
-    });
-
-    // 📦 عندما يفتح التطبيق من إشعار
-    messaging()
-      .getInitialNotification()
-      .then((remoteMessage) => {
-        if (remoteMessage) {
-          console.log("📩 App opened from notification:", remoteMessage);
-          if (remoteMessage?.data?.screen) {
-            navigation.replace("TabsScreen");
-          }
-        }
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener(notification => {
+        console.log("🔔 Notification Received:", notification);
       });
 
-    // 📨 استقبال الإشعارات أثناء فتح التطبيق
-    const unsubscribeOnMessage = messaging().onMessage(async (remoteMessage) => {
-      console.log("📨 Notification received in foreground:", remoteMessage);
-      // يمكنك إضافة Toast هنا إذا أردت
-    });
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener(response => {
+        console.log("📩 Notification Clicked:", response);
+      });
 
-    return () => {
-      unsubscribeOnNotificationOpened();
-      unsubscribeOnMessage();
-    };
-  }, [navigation]);
+   return () => {
+  notificationListener.current?.remove();
+  responseListener.current?.remove();
+};
 
-  // 🧩 تحويل الأرقام العربية إلى إنجليزية
+  }, []);
+
   const convertArabicToEnglishNumbers = (input: string) => {
-    return input.replace(/[\u0660-\u0669]/g, (d) => {
-      return String(d.charCodeAt(0) - 1632);
-    });
+    return input.replace(/[\u0660-\u0669]/g, d =>
+      String(d.charCodeAt(0) - 1632)
+    );
   };
 
   // ✅ تسجيل الدخول
@@ -513,63 +494,54 @@ export default function LoginScreen() {
     const normalizedPhone = convertArabicToEnglishNumbers(phone);
 
     if (normalizedPhone.length !== 10) {
-      setError("رقم الهاتف يجب أن يكون مكون من 10 أرقام بالضبط");
+      setError("رقم الهاتف يجب أن يكون مكون من 10 أرقام");
       return;
     }
 
     setLoading(true);
 
     try {
-      const fcmToken = await registerForPushNotificationsAsync();
-      console.log("🚀 Token used for login:", fcmToken);
+      const expoPushToken = await registerForPushNotificationsAsync();
 
-      const response = await fetch("https://apilab-dev.runasp.net/api/ClientMobile/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          phone: normalizedPhone,
-          fcmToken: fcmToken,
-        }),
-      });
+      const response = await fetch(
+        "https://apilab-dev.runasp.net/api/ClientMobile/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phone: normalizedPhone,
+            fcmToken: expoPushToken,
+          }),
+        }
+      );
 
-      const text = await response.text();
-      const data = text ? JSON.parse(text) : null;
-      console.log("📩 Response data:", data);
+      const data = await response.json();
 
       if (response.ok && data?.success) {
         await AsyncStorage.setItem("token", data.resource.token);
-        await AsyncStorage.setItem("username", data.resource.username);
-        await AsyncStorage.setItem("phoneNumber", data.resource.phoneNumber);
-        await AsyncStorage.setItem("userFcmToken", fcmToken);
-        await AsyncStorage.setItem("isGuest", "false"); // تأكيد أنه ليس ضيف
+        await AsyncStorage.setItem(
+          "expoPushToken",
+          expoPushToken ?? ""
+        );
 
         navigation.replace("TabsScreen");
       } else {
-        setError("فشل تسجيل الدخول، تأكد من صحة رقم الهاتف");
+        setError("فشل تسجيل الدخول");
       }
     } catch (err) {
-      console.log("❌ Network error:", err);
-      setError("حدث خطأ أثناء الاتصال بالسيرفر");
+      setError("خطأ في الاتصال بالسيرفر");
     }
 
     setLoading(false);
   };
 
-  // ✅ الدخول كضيف
+  // ✅ دخول كضيف
   const handleGuestLogin = async () => {
-    try {
-      // حفظ حالة الضيف
-      await AsyncStorage.setItem("isGuest", "true");
-      await AsyncStorage.setItem("guestUsername", "ضيف");
-      
-      navigation.replace("TabsScreen");
-    } catch (error) {
-      console.log("❌ Error in guest login:", error);
-    }
+    await AsyncStorage.setItem("isGuest", "true");
+    await AsyncStorage.setItem("guestUsername", "ضيف");
+    navigation.replace("TabsScreen");
   };
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.CALL_PHONE"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.NOTIFICATIONS"/>
@@ -30,6 +31,24 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="darelteb"/>
         <data android:scheme="exp+dar-el-teb"/>
+      </intent-filter>
+      <intent-filter data-generated="true">
+        <action android:name="android.intent.action.VIEW"/>
+        <data android:scheme="tel"/>
+        <data android:scheme="https"/>
+        <data android:scheme="http"/>
+        <data android:scheme="exp+dar-el-teb"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter data-generated="true">
+        <action android:name="android.intent.action.VIEW"/>
+        <data android:scheme="tel"/>
+        <data android:scheme="https"/>
+        <data android:scheme="http"/>
+        <data android:scheme="exp+dar-el-teb"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
     </activity>
   </application>
