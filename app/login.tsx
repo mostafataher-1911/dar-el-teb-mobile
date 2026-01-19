@@ -386,7 +386,6 @@ import { Ionicons } from "@expo/vector-icons";
 
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
-import Constants from "expo-constants";
 
 const { width, height } = Dimensions.get("window");
 
@@ -411,7 +410,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-
 export default function LoginScreen() {
   const navigation = useNavigation<NavigationProps>();
 
@@ -419,39 +417,17 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-const notificationListener = useRef<Notifications.Subscription | null>(null);
-const responseListener = useRef<Notifications.Subscription | null>(null);
+  const notificationListener = useRef<Notifications.Subscription | null>(null);
+  const responseListener = useRef<Notifications.Subscription | null>(null);
 
-
-  // ✅ تسجيل الإشعارات + Expo Push Token
+  // ✅ تسجيل الإشعارات (نسخة آمنة APK)
   async function registerForPushNotificationsAsync(): Promise<string | null> {
-    if (!Device.isDevice) {
-      console.log("❌ Must use physical device");
-      return null;
-    }
+    if (!Device.isDevice) return null;
 
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status !== "granted") return null;
 
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-
-    if (finalStatus !== "granted") {
-      console.log("🚫 Permission denied");
-      return null;
-    }
-
-    const token = (
-      await Notifications.getExpoPushTokenAsync({
-        projectId: Constants.expoConfig?.extra?.eas?.projectId,
-      })
-    ).data;
-
-    console.log("📱 Expo Push Token:", token);
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
 
     if (Platform.OS === "android") {
       await Notifications.setNotificationChannelAsync("default", {
@@ -463,32 +439,24 @@ const responseListener = useRef<Notifications.Subscription | null>(null);
     return token;
   }
 
-  // 📨 استقبال الإشعارات
   useEffect(() => {
     notificationListener.current =
-      Notifications.addNotificationReceivedListener(notification => {
-        console.log("🔔 Notification Received:", notification);
-      });
+      Notifications.addNotificationReceivedListener(() => {});
 
     responseListener.current =
-      Notifications.addNotificationResponseReceivedListener(response => {
-        console.log("📩 Notification Clicked:", response);
-      });
+      Notifications.addNotificationResponseReceivedListener(() => {});
 
-   return () => {
-  notificationListener.current?.remove();
-  responseListener.current?.remove();
-};
-
+    return () => {
+      notificationListener.current?.remove();
+      responseListener.current?.remove();
+    };
   }, []);
 
-  const convertArabicToEnglishNumbers = (input: string) => {
-    return input.replace(/[\u0660-\u0669]/g, d =>
+  const convertArabicToEnglishNumbers = (input: string) =>
+    input.replace(/[\u0660-\u0669]/g, d =>
       String(d.charCodeAt(0) - 1632)
     );
-  };
 
-  // ✅ تسجيل الدخول
   const handleLogin = async () => {
     setError("");
     const normalizedPhone = convertArabicToEnglishNumbers(phone);
@@ -510,47 +478,43 @@ const responseListener = useRef<Notifications.Subscription | null>(null);
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             phone: normalizedPhone,
-            fcmToken: expoPushToken,
+            fcmToken: expoPushToken ?? "",
           }),
         }
       );
 
       const data = await response.json();
 
-      if (response.ok && data?.success) {
-  // 🔴 مهم جدًا
-  await AsyncStorage.removeItem("isGuest");
-  await AsyncStorage.removeItem("guestUsername");
-
-  await AsyncStorage.setItem("token", data.resource.token);
-  await AsyncStorage.setItem("expoPushToken", expoPushToken ?? "");
-
-  navigation.replace("TabsScreen");
-} else {
-        setError("فشل تسجيل الدخول");
+      if (!response.ok || !data?.success) {
+        setError(data?.message || "فشل تسجيل الدخول");
+        return;
       }
-    } catch (err) {
-      setError("خطأ في الاتصال بالسيرفر");
-    }
 
-    setLoading(false);
+      await AsyncStorage.multiRemove(["isGuest", "guestUsername"]);
+      await AsyncStorage.setItem("token", data.resource.token);
+      await AsyncStorage.setItem("expoPushToken", expoPushToken ?? "");
+
+      navigation.replace("TabsScreen");
+    } catch (e) {
+      console.log("LOGIN ERROR:", e);
+      setError("حدث خطأ في التطبيق");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ✅ دخول كضيف
   const handleGuestLogin = async () => {
     await AsyncStorage.setItem("isGuest", "true");
     await AsyncStorage.setItem("guestUsername", "ضيف");
     navigation.replace("TabsScreen");
   };
 
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAwareScrollView
         style={{ flex: 1, backgroundColor: "#fff" }}
         contentContainerStyle={{ flexGrow: 1 }}
-        enableOnAndroid={true}
-        extraScrollHeight={20}
+        enableOnAndroid
       >
         <View style={styles.container}>
           <Image
@@ -577,7 +541,6 @@ const responseListener = useRef<Notifications.Subscription | null>(null);
               <TextInput
                 style={styles.input}
                 placeholder="ادخل رقم الهاتف"
-                placeholderTextColor="#888"
                 keyboardType="phone-pad"
                 textAlign="right"
                 value={phone}
@@ -590,35 +553,18 @@ const responseListener = useRef<Notifications.Subscription | null>(null);
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <TouchableOpacity
-              style={[
-                styles.button,
-                (!phone || loading) && styles.buttonDisabled,
-              ]}
+              style={styles.button}
               onPress={handleLogin}
-              disabled={!phone || loading}
+              disabled={loading}
             >
               {loading ? (
-                <ActivityIndicator size="small" color="#fff" />
+                <ActivityIndicator color="#fff" />
               ) : (
-                <Text
-                  style={[
-                    styles.buttonText,
-                    (!phone || loading) && styles.buttonTextDisabled,
-                  ]}
-                >
-                  متابعة
-                </Text>
+                <Text style={styles.buttonText}>متابعة</Text>
               )}
             </TouchableOpacity>
 
-            {/* زر الدخول كضيف - تصميم محسن */}
             <View style={styles.guestSection}>
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>أو</Text>
-                <View style={styles.dividerLine} />
-              </View>
-              
               <TouchableOpacity
                 style={styles.guestButton}
                 onPress={handleGuestLogin}
@@ -626,21 +572,14 @@ const responseListener = useRef<Notifications.Subscription | null>(null);
                 <Ionicons name="person-outline" size={24} color="#005FA1" />
                 <Text style={styles.guestButtonText}>الدخول كضيف</Text>
               </TouchableOpacity>
-              
-              <Text style={styles.guestNote}>
-                يمكنك التصفح كضيف وعرض النقابات والموقع
-              </Text>
             </View>
-
-            {/* <Text style={styles.footer}>
-              من خلال الاستمرار فإنك توافق على شروط الاستخدام وسياسة الخصوصية
-            </Text> */}
           </View>
         </View>
       </KeyboardAwareScrollView>
     </TouchableWithoutFeedback>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff", alignItems: "center" },
