@@ -469,8 +469,7 @@ export default function LoginScreen() {
     setLoading(true);
 
     try {
-      const expoPushToken = await registerForPushNotificationsAsync();
-
+const expoToken = await Notifications.getExpoPushTokenAsync();
       const response = await fetch(
         "https://apilab-dev.runasp.net/api/ClientMobile/login",
         {
@@ -478,11 +477,14 @@ export default function LoginScreen() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             phone: normalizedPhone,
-            fcmToken: expoPushToken ?? "",
+            fcmToken:  expoToken.data,
           }),
         }
       );
-
+console.log("📤 LOGIN PAYLOAD:", {
+  phone: normalizedPhone,
+  fcmToken: expoToken.data,
+});
       const data = await response.json();
 
       if (!response.ok || !data?.success) {
@@ -492,7 +494,7 @@ export default function LoginScreen() {
 
       await AsyncStorage.multiRemove(["isGuest", "guestUsername"]);
       await AsyncStorage.setItem("token", data.resource.token);
-      await AsyncStorage.setItem("expoPushToken", expoPushToken ?? "");
+      await AsyncStorage.setItem("expoPushToken", expoToken.data || "");
 
       navigation.replace("TabsScreen");
     } catch (e) {

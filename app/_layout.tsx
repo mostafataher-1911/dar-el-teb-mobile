@@ -105,7 +105,7 @@ export default function RootLayout() {
   const sendTokenToServer = async (token: string) => {
     try {
       const response = await fetch(
-        "https://apilab.runasp.net/WeatherForecast/ExpoPush",
+        "https://apilab-dev.runasp.net/WeatherForecast/ExpoPush",
         {
           method: "POST",
           headers: {
