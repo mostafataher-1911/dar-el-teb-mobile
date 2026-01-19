@@ -5,8 +5,8 @@ import { Ionicons } from "@expo/vector-icons";
 export default function LabLocationScreen() {
   const openMaps = async () => {
     try {
-       const latitude = "31.1175442";
-      const longitude = "33.8046228";
+       const latitude = "31.1149122";
+      const longitude = "33.6902313";
       const url = `https://maps.google.com/?q=${latitude},${longitude}`;
       const supported = await Linking.canOpenURL(url);
       
@@ -22,7 +22,7 @@ export default function LabLocationScreen() {
 
   const callPhone = async () => {
     try {
-      const url = 'tel:01116729752';
+      const url = 'tel:01223649261';
       const supported = await Linking.canOpenURL(url);
       
       if (supported) {
@@ -42,14 +42,14 @@ export default function LabLocationScreen() {
       <View style={styles.infoCard}>
         <Text style={styles.labName}>معمل دار الطب</Text>
         
-        <Text style={styles.address}>
+        {/* <Text style={styles.address}>
           📍 ش أمام مدرسة الثانوية بنات بجوار مدرسة ميس بيرسون - ملوي - المنيا
-        </Text>
+        </Text> */}
 
    
 
         <TouchableOpacity style={styles.contactItem} onPress={callPhone}>
-          <Text style={styles.contactText}>01116729752</Text>
+          <Text style={styles.contactText}>01223649261</Text>
           <Ionicons name="call" size={24} color="#005FA1" />
         </TouchableOpacity>
 

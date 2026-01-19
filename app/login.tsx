@@ -518,14 +518,15 @@ const responseListener = useRef<Notifications.Subscription | null>(null);
       const data = await response.json();
 
       if (response.ok && data?.success) {
-        await AsyncStorage.setItem("token", data.resource.token);
-        await AsyncStorage.setItem(
-          "expoPushToken",
-          expoPushToken ?? ""
-        );
+  // 🔴 مهم جدًا
+  await AsyncStorage.removeItem("isGuest");
+  await AsyncStorage.removeItem("guestUsername");
 
-        navigation.replace("TabsScreen");
-      } else {
+  await AsyncStorage.setItem("token", data.resource.token);
+  await AsyncStorage.setItem("expoPushToken", expoPushToken ?? "");
+
+  navigation.replace("TabsScreen");
+} else {
         setError("فشل تسجيل الدخول");
       }
     } catch (err) {

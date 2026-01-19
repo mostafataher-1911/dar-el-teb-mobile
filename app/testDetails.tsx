@@ -71,7 +71,7 @@ export default function TestDetailsScreen() {
   };
 
   const handleCall = () => {
-    const phoneNumber = "01116729752";
+    const phoneNumber = "01223649261";
     const url = `tel:${phoneNumber}`;
     // Linking.openURL(url).catch(() => {
     //   Alert.alert("خطأ", "لا يمكن إجراء المكالمة");
