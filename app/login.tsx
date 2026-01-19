@@ -457,53 +457,83 @@ export default function LoginScreen() {
       String(d.charCodeAt(0) - 1632)
     );
 
-  const handleLogin = async () => {
-    setError("");
-    const normalizedPhone = convertArabicToEnglishNumbers(phone);
+const handleLogin = async () => {
+  setError("");
+  const normalizedPhone = convertArabicToEnglishNumbers(phone);
 
-    if (normalizedPhone.length !== 10) {
-      setError("رقم الهاتف يجب أن يكون مكون من 10 أرقام");
+  if (normalizedPhone.length !== 10) {
+    setError("رقم الهاتف يجب أن يكون مكون من 10 أرقام");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const fcmToken = await AsyncStorage.getItem("fcmToken");
+    
+    console.log("📤 LOGIN PAYLOAD:", {
+      phone: normalizedPhone,
+      fcmToken: fcmToken ?? "",
+    });
+    
+    const response = await fetch(
+      "https://apilab-dev.runasp.net/api/ClientMobile/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: normalizedPhone,
+          fcmToken: fcmToken ?? "",
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    console.log("✅ LOGIN SUCCESS:", {
+      success: data?.success,
+      hasToken: !!data?.resource?.token,
+      username: data?.resource?.username
+    });
+
+    if (!response.ok || !data?.success) {
+      setError(data?.message || "فشل تسجيل الدخول");
       return;
     }
 
-    setLoading(true);
+    // ✅ تأكد من حفظ التوكن
+    await AsyncStorage.multiRemove(["isGuest", "guestUsername"]);
+    await AsyncStorage.setItem("token", data.resource.token);
+    await AsyncStorage.setItem("userName", data.resource.username || "مستخدم");
+    await AsyncStorage.setItem("phoneNumber", data.resource.phoneNumber || "");
 
+    // ✅ إضافة تأخير بسيط للتأكد من حفظ البيانات
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // ✅ التحقق من البيانات المحفوظة
+    const savedToken = await AsyncStorage.getItem("token");
+    console.log("💾 TOKEN SAVED:", savedToken ? "YES" : "NO");
+
+    // ✅ استخدام navigation.replace مع معالجة الأخطاء
     try {
-const expoToken = await Notifications.getExpoPushTokenAsync();
-      const response = await fetch(
-        "https://apilab-dev.runasp.net/api/ClientMobile/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            phone: normalizedPhone,
-            fcmToken: expoToken.data ?? "",
-          }),
-        }
-      );
-console.log("📤 LOGIN PAYLOAD:", {
-  phone: normalizedPhone,
-  fcmToken: expoToken.data ,
-});
-      const data = await response.json();
-
-      if (!response.ok || !data?.success) {
-        setError(data?.message || "فشل تسجيل الدخول");
-        return;
-      }
-
-      await AsyncStorage.multiRemove(["isGuest", "guestUsername"]);
-      await AsyncStorage.setItem("token", data.resource.token);
-      await AsyncStorage.setItem("expoPushToken", expoToken.data || "");
-
+      console.log("🔄 Navigating to TabsScreen...");
       navigation.replace("TabsScreen");
-    } catch (e) {
-      console.log("LOGIN ERROR:", e);
-      setError("حدث خطأ في التطبيق");
-    } finally {
-      setLoading(false);
+    } catch (navError) {
+      console.log("❌ NAVIGATION ERROR:", navError);
+      // محاولة بديلة
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "TabsScreen" }],
+      });
     }
-  };
+
+  } catch (e) {
+    console.log("LOGIN ERROR:", e);
+    setError("حدث خطأ في التطبيق: " + (e as Error).message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleGuestLogin = async () => {
     await AsyncStorage.setItem("isGuest", "true");
