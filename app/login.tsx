@@ -477,13 +477,13 @@ const expoToken = await Notifications.getExpoPushTokenAsync();
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             phone: normalizedPhone,
-            fcmToken:  expoToken.data,
+            fcmToken: expoToken.data ?? "",
           }),
         }
       );
 console.log("📤 LOGIN PAYLOAD:", {
   phone: normalizedPhone,
-  fcmToken: expoToken.data,
+  fcmToken: expoToken.data ,
 });
       const data = await response.json();
 

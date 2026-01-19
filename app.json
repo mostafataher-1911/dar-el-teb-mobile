@@ -37,6 +37,7 @@
       "associatedDomains": []
     },
     "android": {
+       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/LOGO-DARELTEB.png",
         "backgroundColor": "#E6F4FE"
