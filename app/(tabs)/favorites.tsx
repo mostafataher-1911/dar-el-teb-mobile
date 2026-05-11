@@ -143,7 +143,7 @@ export default function FavoritesScreen() {
                 source={{
                   uri: test.imageUrl.startsWith('http')
                     ? test.imageUrl
-                    : `https://apilab-dev.runasp.net${test.imageUrl}`,
+                    : `https://apilab.runasp.net${test.imageUrl}`,
                 }}
                 style={styles.cardImage}
                 resizeMode="cover"

@@ -47,7 +47,7 @@ export default class Account extends Component<{}, State> {
       }
 
 
-      const response = await fetch("https://apilab-dev.runasp.net/api/ClientMobile/GetProfile", {
+      const response = await fetch("https://apilab.runasp.net/api/ClientMobile/GetProfile", {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -183,9 +183,11 @@ export default class Account extends Component<{}, State> {
         <View style={{ marginTop: hp("3%") }}>
           <LogoutButton />
         </View>
-        {/* <View style={{ marginTop: hp("1%") }}>
-  <DeleteAccountButton />
-</View> */}
+        
+         <View style={{ marginTop: hp("1%") }}>
+              <DeleteAccountButton />
+        </View>
+        
 
       </View>
       

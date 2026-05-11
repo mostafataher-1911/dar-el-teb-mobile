@@ -132,7 +132,7 @@ export default function TestDetailsScreen() {
               uri: test.imageUrl && test.imageUrl.startsWith('http')
                 ? test.imageUrl
                 : test.imageUrl
-                ? `https://apilab-dev.runasp.net${test.imageUrl}`
+                ? `https://apilab.runasp.net${test.imageUrl}`
                 : 'https://via.placeholder.com/400x300?text=No+Image'
             }}
             style={styles.testImage}

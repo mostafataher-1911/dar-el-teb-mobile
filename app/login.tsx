@@ -57,7 +57,7 @@
 //     setLoading(true);
 
 //     try {
-//       const response = await fetch("https://apilab-dev.runasp.net/api/ClientMobile/login", {
+//       const response = await fetch("https://apilab.runasp.net/api/ClientMobile/login", {
 //         method: "POST",
 //         headers: {
 //           "Content-Type": "application/json",
@@ -477,7 +477,7 @@ const handleLogin = async () => {
     });
     
     const response = await fetch(
-      "https://apilab-dev.runasp.net/api/ClientMobile/login",
+      "https://apilab.runasp.net/api/ClientMobile/login",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
