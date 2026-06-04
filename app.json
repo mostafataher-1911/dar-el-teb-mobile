@@ -2,7 +2,7 @@
   "expo": {
     "name": "Dar-El-Teb",
     "slug": "dar-el-teb",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/LOGO-DARELTEB.png",
     "scheme": "darelteb",
@@ -16,9 +16,13 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.darelteb.com",
-      "buildNumber": "2.0.0",
+      "buildNumber": "3",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
+        "LSApplicationQueriesSchemes": [
+          "whatsapp",
+          "tel"
+        ],
         "UIBackgroundModes": [
           "remote-notification"
         ],
@@ -43,7 +47,7 @@
         "backgroundColor": "#E6F4FE"
       },
       "package": "com.dareelteb.app",
-      "versionCode": 13,
+      "versionCode": 14,
       "permissions": [
         "NOTIFICATIONS",
         "FOREGROUND_SERVICE",

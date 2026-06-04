@@ -1,36 +1,74 @@
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  Image, 
-  ScrollView, 
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
   ActivityIndicator,
   TouchableOpacity,
   Share,
-  Alert
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import PageFilters from "@/components/PageFilters";
+import { FilterChip } from "@/components/FilterChips";
+
+type Banner = {
+  imageUrl: string;
+  name?: string;
+  title?: string;
+  description?: string;
+  id?: string;
+  displayLabel: string;
+};
+
+const OFFER_FILTERS: FilterChip[] = [
+  { id: "all", label: "كل العروض" },
+  { id: "newest", label: "الأحدث" },
+  { id: "oldest", label: "الأقدم" },
+];
+
+function normalizeBanners(resource: any[]): Banner[] {
+  return resource.map((item, index) => ({
+    ...item,
+    displayLabel:
+      item.name ||
+      item.title ||
+      item.description ||
+      `عرض ${index + 1}`,
+  }));
+}
 
 export default function OffersScreen() {
-  const [banners, setBanners] = useState<any[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [filteredBanners, setFilteredBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [offerFilter, setOfferFilter] = useState("all");
 
-  const handleShare = async (banner: any) => {
-    try {
-      const shareMessage = `عرض خاص من معمل دار الطب\n\n` +
-        `شاهد هذا العرض المميز في تطبيق دار الطب`;
+  const applyFilters = useCallback(
+    (source: Banner[], search: string, filterId: string) => {
+      let result = [...source];
 
-      await Share.share({
-        message: shareMessage,
-        title: "عرض من معمل دار الطب",
-      });
-    } catch (error) {
-      console.error("Error sharing:", error);
-    }
-  };
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        result = result.filter((item) =>
+          item.displayLabel.toLowerCase().includes(q)
+        );
+      }
+
+      if (filterId === "newest") {
+        result = [...result].reverse();
+      } else if (filterId === "oldest") {
+        result = [...result];
+      }
+
+      setFilteredBanners(result);
+    },
+    []
+  );
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -45,7 +83,9 @@ export default function OffersScreen() {
         });
         const data = await res.json();
         if (data.success && data.resource) {
-          setBanners(data.resource);
+          const normalized = normalizeBanners(data.resource);
+          setBanners(normalized);
+          applyFilters(normalized, "", "all");
         }
       } catch (err) {
         console.log("Error fetching banners:", err);
@@ -55,7 +95,38 @@ export default function OffersScreen() {
     };
 
     fetchBanners();
-  }, []);
+  }, [applyFilters]);
+
+  const handleSearch = (text: string) => {
+    setSearchQuery(text);
+    applyFilters(banners, text, offerFilter);
+  };
+
+  const handleFilter = (id: string) => {
+    setOfferFilter(id);
+    applyFilters(banners, searchQuery, id);
+  };
+
+  const handleShare = async (banner: Banner) => {
+    try {
+      const shareMessage =
+        `عرض خاص من معمل دار الطب\n\n` +
+        `${banner.displayLabel}\n\n` +
+        `شاهد هذا العرض في تطبيق دار الطب`;
+
+      await Share.share({
+        message: shareMessage,
+        title: banner.displayLabel,
+      });
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
+
+  const resultCount = useMemo(
+    () => `${filteredBanners.length} من ${banners.length}`,
+    [filteredBanners.length, banners.length]
+  );
 
   if (loading) {
     return (
@@ -71,19 +142,30 @@ export default function OffersScreen() {
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>العروض والإعلانات</Text>
+          <Text style={styles.headerTitle}>عروض خاصة</Text>
         </View>
 
-        {/* Banners */}
-        <ScrollView 
+        <PageFilters
+          searchPlaceholder="ابحث في العروض"
+          searchValue={searchQuery}
+          onSearchChange={handleSearch}
+          primaryLabel="نوع العرض"
+          primaryFilters={OFFER_FILTERS}
+          primarySelected={offerFilter}
+          onPrimarySelect={handleFilter}
+        />
+
+        <Text style={styles.resultCount}>النتائج: {resultCount}</Text>
+
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {banners.length > 0 ? (
-            banners.map((item, index) => (
-              <View key={index} style={styles.bannerCard}>
+          {filteredBanners.length > 0 ? (
+            filteredBanners.map((item, index) => (
+              <View key={`${item.id ?? index}-${item.displayLabel}`} style={styles.bannerCard}>
+                <Text style={styles.bannerLabel}>{item.displayLabel}</Text>
                 <Image
                   source={{ uri: `https://apilab.runasp.net${item.imageUrl}` }}
                   style={styles.bannerImage}
@@ -100,7 +182,7 @@ export default function OffersScreen() {
             ))
           ) : (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>لا توجد عروض حالياً</Text>
+              <Text style={styles.emptyText}>لا توجد عروض مطابقة للفلتر</Text>
             </View>
           )}
         </ScrollView>
@@ -126,14 +208,21 @@ const styles = StyleSheet.create({
     paddingVertical: hp("2%"),
     backgroundColor: "#001D3C",
     borderBottomWidth: 1,
-    borderRadius:50,
+    borderRadius: 50,
     borderBottomColor: "#e9ecef",
-   
   },
   headerTitle: {
     fontSize: wp("5%"),
     fontWeight: "bold",
     color: "#fff",
+  },
+  resultCount: {
+    textAlign: "right",
+    paddingHorizontal: wp("4%"),
+    paddingVertical: hp("0.8%"),
+    color: "#666",
+    fontSize: wp("3.5%"),
+    backgroundColor: "#fff",
   },
   scrollContent: {
     padding: wp("4%"),
@@ -144,14 +233,19 @@ const styles = StyleSheet.create({
     borderRadius: wp("3%"),
     marginBottom: hp("2%"),
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
     overflow: "hidden",
+  },
+  bannerLabel: {
+    paddingHorizontal: wp("4%"),
+    paddingTop: hp("1.5%"),
+    fontSize: wp("4%"),
+    fontWeight: "700",
+    color: "#001D3C",
+    textAlign: "right",
   },
   bannerImage: {
     width: "100%",
@@ -165,7 +259,7 @@ const styles = StyleSheet.create({
     paddingVertical: hp("1.5%"),
     paddingHorizontal: wp("5%"),
     borderRadius: 10,
-    marginTop: hp("1%"),
+    margin: hp("1%"),
     gap: 8,
   },
   shareButtonText: {

@@ -8,6 +8,8 @@ import HomeScreen from "./index";
 import LabLocationScreen from "./LabLocationScreen";
 import OffersScreen from "./offers";
 import FavoritesScreen from "./favorites";
+import AppointmentsScreen from "./appointments";
+
 const Tab = createBottomTabNavigator();
 
 export default function TabsScreen() {
@@ -21,7 +23,6 @@ export default function TabsScreen() {
     try {
       const guestStatus = await AsyncStorage.getItem("isGuest");
       setIsGuest(guestStatus === "true");
-      console.log("Guest status:", guestStatus); 
     } catch (error) {
       console.log("Error checking guest status:", error);
     }
@@ -29,7 +30,7 @@ export default function TabsScreen() {
 
   return (
     <Tab.Navigator
-      initialRouteName="OffersScreen" 
+      initialRouteName="Home"
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#005FA1",
@@ -46,13 +47,14 @@ export default function TabsScreen() {
           ),
         }}
       />
-       <Tab.Screen
-        name="OffersScreen"
-        component={OffersScreen}
+
+      <Tab.Screen
+        name="Appointments"
+        component={AppointmentsScreen}
         options={{
-          title: 'العروض',
+          title: "طلباتي",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="local-offer" size={size} color={color} />
+            <MaterialIcons name="event-note" size={size} color={color} />
           ),
         }}
       />
@@ -80,6 +82,17 @@ export default function TabsScreen() {
       />
 
       <Tab.Screen
+        name="OffersScreen"
+        component={OffersScreen}
+        options={{
+          title: "العروض",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="local-offer" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
         name="LabLocation"
         component={LabLocationScreen}
         options={{
@@ -90,18 +103,20 @@ export default function TabsScreen() {
         }}
       />
 
-      {!isGuest && (
-        <Tab.Screen
-          name="Account"
-          component={AccountScreen}
-          options={{
-            title: "حسابي",
-            tabBarIcon: ({ color, size }) => (
-              <MaterialIcons name="person" size={size} color={color} />
-            ),
-          }}
-        />
-      )}
+      <Tab.Screen
+        name="Account"
+        component={AccountScreen}
+        options={{
+          title: isGuest ? "تسجيل الدخول" : "حسابي",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons
+              name={isGuest ? "login" : "person"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }

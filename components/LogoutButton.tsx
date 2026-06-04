@@ -8,10 +8,16 @@ const LogoutButton = () => {
 
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem("isLoggedIn");
+      await AsyncStorage.multiRemove([
+        "token",
+        "userName",
+        "phoneNumber",
+        "isGuest",
+        "isLoggedIn",
+      ]);
 
-      // ✅ Reset navigation stack completely
-      navigation.reset({
+      const parent = navigation.getParent();
+      (parent ?? navigation).reset({
         index: 0,
         routes: [{ name: "LoginScreen" }],
       });

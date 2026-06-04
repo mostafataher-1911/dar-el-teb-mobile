@@ -10,23 +10,38 @@ import {
   Share,
   Alert,
   Dimensions,
-  Platform,
+  Linking,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AppointmentRequest } from "@/services/appointmentService";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { favoritesService, FavoriteTest } from "@/services/favoritesService";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import AppointmentRequestModal from "@/components/AppointmentRequestModal";
 
 const { width } = Dimensions.get("window");
 
+type RootStackParamList = {
+  TabsScreen: {
+    screen: "Appointments";
+    params: {
+      highlightId: string;
+      newAppointment: AppointmentRequest;
+    };
+  };
+  TestDetails: { test: FavoriteTest };
+};
+
 export default function TestDetailsScreen() {
   const route = useRoute();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { test } = route.params as { test: FavoriteTest };
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showBooking, setShowBooking] = useState(false);
 
   useEffect(() => {
     checkFavoriteStatus();
@@ -70,20 +85,29 @@ export default function TestDetailsScreen() {
     }
   };
 
-  const handleCall = () => {
+  const handleBookingSuccess = (appointment: AppointmentRequest) => {
+    setShowBooking(false);
+    navigation.navigate("TabsScreen", {
+      screen: "Appointments",
+      params: {
+        highlightId: appointment.id,
+        newAppointment: appointment,
+      },
+    });
+  };
+
+  const handleCall = async () => {
     const phoneNumber = "01223649261";
-    const url = `tel:${phoneNumber}`;
-    // Linking.openURL(url).catch(() => {
-    //   Alert.alert("خطأ", "لا يمكن إجراء المكالمة");
-    // });
-    Alert.alert(
-      "اتصال",
-      `هل تريد الاتصال بـ ${phoneNumber}؟`,
-      [
-        { text: "إلغاء", style: "cancel" },
-        { text: "اتصال", onPress: () => {} },
-      ]
-    );
+    try {
+      const supported = await Linking.canOpenURL(`tel:${phoneNumber}`);
+      if (supported) {
+        await Linking.openURL(`tel:${phoneNumber}`);
+      } else {
+        Alert.alert("خطأ", "لا يمكن إجراء المكالمة على هذا الجهاز");
+      }
+    } catch {
+      Alert.alert("خطأ", "حدث خطأ أثناء إجراء المكالمة");
+    }
   };
 
   if (loading) {
@@ -168,9 +192,17 @@ export default function TestDetailsScreen() {
 
         {/* Action Buttons */}
         <View style={styles.actionsContainer}>
-          <TouchableOpacity style={styles.primaryButton} onPress={handleCall}>
-            <Ionicons name="call-outline" size={20} color="#fff" />
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={() => setShowBooking(true)}
+          >
+            <Ionicons name="calendar-outline" size={20} color="#fff" />
             <Text style={styles.primaryButtonText}>حجز موعد</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.callButton} onPress={handleCall}>
+            <Ionicons name="call-outline" size={20} color="#005FA1" />
+            <Text style={styles.callButtonText}>اتصال بالمعمل</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -197,13 +229,22 @@ export default function TestDetailsScreen() {
         <View style={styles.additionalInfoCard}>
           <Text style={styles.additionalInfoTitle}>معلومات إضافية</Text>
           <Text style={styles.additionalInfoText}>
-            للحصول على مزيد من المعلومات أو لحجز موعد، يرجى الاتصال بنا على الرقم الموضح أعلاه.
+            استخدم زر «حجز موعد» لتسجيل طلبك داخل التطبيق ومتابعته من تبويب طلباتي.
           </Text>
           <Text style={styles.additionalInfoText}>
             يمكنك أيضاً زيارة موقعنا في: ش أمام مدرسة الثانوية بنات بجوار مدرسة ميس بيرسون - ملوي - المنيا
           </Text>
         </View>
       </ScrollView>
+
+      {showBooking && (
+        <AppointmentRequestModal
+          visible
+          test={test}
+          onClose={() => setShowBooking(false)}
+          onSuccess={handleBookingSuccess}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -344,6 +385,22 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: wp("4.5%"),
     fontWeight: "bold",
+  },
+  callButton: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingVertical: hp("1.8%"),
+    borderWidth: 2,
+    borderColor: "#005FA1",
+    gap: 10,
+  },
+  callButtonText: {
+    color: "#005FA1",
+    fontSize: wp("4.2%"),
+    fontWeight: "600",
   },
   secondaryButton: {
     flexDirection: "row-reverse",
