@@ -125,10 +125,12 @@ export default function Unions() {
 
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
+       <View style={styles.titleBar}>
+        <Text style={styles.titleText}>الخصومات الخاصة بالنقابات</Text>
+        {/* <Text style={styles.resultCount}>النتائج: {resultCount}</Text> */}
+      </View>
       <PageFilters
-        searchPlaceholder="ابحث عن النقابة"
-        searchValue={searchQuery}
-        onSearchChange={handleSearch}
+      
         primaryLabel="نسبة الخصم"
         primaryFilters={DISCOUNT_FILTERS}
         primarySelected={discountFilter}
@@ -139,10 +141,7 @@ export default function Unions() {
         onSecondarySelect={handleSortFilter}
       />
 
-      <View style={styles.titleBar}>
-        <Text style={styles.titleText}>الخصومات الخاصة بالنقابات</Text>
-        <Text style={styles.resultCount}>النتائج: {resultCount}</Text>
-      </View>
+     
 
       {loading ? (
         <View style={styles.loadingContainer}>

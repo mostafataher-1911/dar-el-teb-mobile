@@ -187,13 +187,13 @@ export default function AccountScreen() {
         </View>
       </View>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.appointmentsLink}
         onPress={() => navigation.navigate("Appointments")}
       >
         <Ionicons name="calendar" size={22} color="#fff" />
         <Text style={styles.appointmentsLinkText}>طلبات الحجز الخاصة بي</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <View style={{ marginTop: hp("2%") }}>
         <LogoutButton />
@@ -361,21 +361,21 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  appointmentsLink: {
-    flexDirection: "row-reverse",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    marginTop: hp("2%"),
-    width: wp("90%"),
-    paddingVertical: hp("1.8%"),
-    backgroundColor: "#001D3C",
-    borderRadius: 14,
-    zIndex: 1,
-  },
-  appointmentsLinkText: {
-    color: "#fff",
-    fontSize: wp("4%"),
-    fontWeight: "600",
-  },
+  // appointmentsLink: {
+  //   flexDirection: "row-reverse",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   gap: 10,
+  //   marginTop: hp("2%"),
+  //   width: wp("50%"),
+  //   paddingVertical: hp("1.8%"),
+  //   backgroundColor: "#001D3C",
+  //   borderRadius: 14,
+  //   zIndex: 1,
+  // },
+  // appointmentsLinkText: {
+  //   color: "#fff",
+  //   fontSize: wp("4%"),
+  //   fontWeight: "600",
+  // },
 });

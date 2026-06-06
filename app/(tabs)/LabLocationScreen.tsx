@@ -1,70 +1,52 @@
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Linking,
-  Alert,
-} from "react-native";
-import LabMap from "@/components/LabMap";
+import { View, StyleSheet, Text, TouchableOpacity, Linking, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-
-const LAB_COORDS = {
-  latitude: 31.1149122,
-  longitude: 33.6902313,
-};
 
 export default function LabLocationScreen() {
   const openMaps = async () => {
     try {
-      const url = `https://maps.google.com/?q=${LAB_COORDS.latitude},${LAB_COORDS.longitude}`;
+       const latitude = "31.114817";
+      const longitude = "33.688145";
+      const url = `https://maps.google.com/?q=${latitude},${longitude}`;
       const supported = await Linking.canOpenURL(url);
+      
       if (supported) {
         await Linking.openURL(url);
       } else {
         Alert.alert("خطأ", "لا يمكن فتح الخرائط");
       }
-    } catch {
+    } catch (error) {
       Alert.alert("خطأ", "حدث خطأ أثناء فتح الخرائط");
     }
   };
 
   const callPhone = async () => {
     try {
-      const url = "tel:01223649261";
+      const url = 'tel:01223649261';
       const supported = await Linking.canOpenURL(url);
+      
       if (supported) {
         await Linking.openURL(url);
       } else {
         Alert.alert("خطأ", "لا يمكن إجراء المكالمة");
       }
-    } catch {
+    } catch (error) {
       Alert.alert("خطأ", "حدث خطأ أثناء إجراء المكالمة");
     }
   };
 
   return (
-    <SafeAreaView edges={["top"]} style={styles.safeArea}>
+    <View style={styles.container}>
       <Text style={styles.title}>موقع المعمل</Text>
-
-      <View style={styles.mapContainer}>
-        <LabMap
-          latitude={LAB_COORDS.latitude}
-          longitude={LAB_COORDS.longitude}
-          title="معمل دار الطب"
-          description="ملوي - المنيا"
-        />
-      </View>
-
+      
       <View style={styles.infoCard}>
         <Text style={styles.labName}>معمل دار الطب</Text>
-
+        
         <Text style={styles.address}>
-          ش أمام مدرسة الثانوية بنات بجوار مدرسة ميس بيرسون — ملوي — المنيا
+          📍 ش أمام مدرسة الثانوية بنات بجوار مدرسة ميس بيرسون - ملوي - المنيا
         </Text>
+
+   
 
         <TouchableOpacity style={styles.contactItem} onPress={callPhone}>
           <Text style={styles.contactText}>01223649261</Text>
@@ -72,50 +54,39 @@ export default function LabLocationScreen() {
         </TouchableOpacity>
 
         <View style={styles.hoursSection}>
-          <Text style={styles.sectionTitle}>أوقات العمل</Text>
-          <Text style={styles.hours}>من 8:30 صباحاً حتى 10:00 مساءً</Text>
-          <Text style={styles.hours}>الجمعة من 10:00 صباحاً حتى 10:00 مساءً</Text>
-          <Text style={styles.hours}>طوال أيام الأسبوع</Text>
+          <Text style={styles.sectionTitle}>أوقات العمل:</Text>
+          <Text style={styles.hours}>🕗 من 8:30 صباحاً حتى 10:00 مساءً</Text>
+          <Text style={styles.hours}>🕗 الجمعة من 10:00 صباحاً حتى 10:00 مساءً</Text>
+          <Text style={styles.hours}>⏰ طوال أيام الأسبوع</Text>
         </View>
 
         <TouchableOpacity style={styles.mapButton} onPress={openMaps}>
           <Ionicons name="navigate" size={20} color="#fff" />
-          <Text style={styles.mapButtonText}>التوجيه عبر خرائط جوجل</Text>
+          <Text style={styles.mapButtonText}>فتح في خرائط جوجل</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: "#fff",
+    padding: 20,
   },
   title: {
-    fontSize: wp("6%"),
+    fontSize: 24,
     fontWeight: "bold",
     color: "#005FA1",
     textAlign: "center",
-    marginTop: hp("1%"),
-    marginBottom: hp("1%"),
-  },
-  mapContainer: {
-    height: hp("28%"),
-    marginHorizontal: wp("4%"),
-    borderRadius: 14,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
+    marginTop: 50,
+    marginBottom: 20,
   },
   infoCard: {
-    flex: 1,
     backgroundColor: "#fff",
     borderRadius: 15,
-    padding: wp("5%"),
-    marginHorizontal: wp("4%"),
-    marginTop: hp("2%"),
-    marginBottom: hp("2%"),
+    padding: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -123,18 +94,40 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   labName: {
-    fontSize: wp("5.5%"),
+    fontSize: 22,
     fontWeight: "bold",
     color: "#005FA1",
     textAlign: "center",
-    marginBottom: hp("1%"),
+    marginBottom: 15,
   },
   address: {
-    fontSize: wp("3.8%"),
+    fontSize: 16,
     color: "#666",
     textAlign: "center",
     lineHeight: 22,
-    marginBottom: hp("2%"),
+    marginBottom: 15,
+  },
+  coordinates: {
+    backgroundColor: "#f0f7ff",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "#005FA1",
+    borderStyle: "dashed",
+  },
+  coordinatesTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#005FA1",
+    textAlign: "center",
+    marginBottom: 5,
+  },
+  coordinatesText: {
+    fontSize: 12,
+    color: "#666",
+    textAlign: "center",
+    fontFamily: "monospace",
   },
   contactItem: {
     flexDirection: "row-reverse",
@@ -143,11 +136,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
     padding: 15,
     borderRadius: 10,
-    marginBottom: hp("2%"),
+    marginBottom: 15,
     gap: 10,
   },
   contactText: {
-    fontSize: wp("4%"),
+    fontSize: 16,
     color: "#005FA1",
     fontWeight: "bold",
   },
@@ -155,17 +148,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f7ff",
     padding: 15,
     borderRadius: 10,
-    marginBottom: hp("2%"),
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: wp("4%"),
+    fontSize: 16,
     fontWeight: "bold",
     color: "#005FA1",
     marginBottom: 10,
     textAlign: "center",
   },
   hours: {
-    fontSize: wp("3.5%"),
+    fontSize: 14,
     color: "#666",
     marginBottom: 5,
     textAlign: "center",
@@ -181,7 +174,7 @@ const styles = StyleSheet.create({
   },
   mapButtonText: {
     color: "#fff",
-    fontSize: wp("4%"),
+    fontSize: 16,
     fontWeight: "bold",
   },
 });

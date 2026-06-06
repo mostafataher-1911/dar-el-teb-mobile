@@ -12,9 +12,9 @@ import { FilterChip } from "@/components/FilterChips";
 import FilterDropdown from "@/components/FilterDropdown";
 
 type Props = {
-  searchPlaceholder: string;
+  searchPlaceholder?: string;
   searchValue?: string;
-  onSearchChange: (text: string) => void;
+  onSearchChange?: (text: string) => void;
   primaryFilters?: FilterChip[];
   primarySelected?: string;
   onPrimarySelect?: (id: string) => void;
@@ -46,7 +46,7 @@ export default function PageFilters({
   const hasSecondary =
     secondaryFilters && secondaryFilters.length > 0 && onSecondarySelect;
 
-  const stackPrimaryList = (primaryFilters?.length ?? 0) > 3;
+  // const stackPrimaryList = (primaryFilters?.length ?? 0) > 3;
   const anyOpen = openMenu !== null;
 
   const toggle = (menu: OpenMenu) => {
@@ -57,11 +57,13 @@ export default function PageFilters({
 
   return (
     <View style={styles.container}>
-      <HeaderWithSearch
-        value={searchValue}
-        onChangeText={onSearchChange}
-        searchPlaceholder={searchPlaceholder}
-      />
+     {searchPlaceholder && onSearchChange && (
+  <HeaderWithSearch
+    value={searchValue}
+    onChangeText={onSearchChange}
+    searchPlaceholder={searchPlaceholder}
+  />
+)}
 
       {(hasPrimary || hasSecondary) && (
         <View style={[styles.filtersSection, anyOpen && styles.filtersSectionOpen]}>
@@ -73,55 +75,29 @@ export default function PageFilters({
             </TouchableWithoutFeedback>
           )}
 
-          {stackPrimaryList ? (
-            <View style={styles.stackedLayout}>
-              {hasPrimary && (
-                <FilterDropdown
-                  label={primaryLabel}
-                  options={primaryFilters}
-                  selectedId={primarySelected}
-                  onSelect={onPrimarySelect}
-                  isOpen={openMenu === "primary"}
-                  onToggle={() => toggle("primary")}
-                  fullWidth
-                />
-              )}
-              {hasSecondary && (
-                <FilterDropdown
-                  label={secondaryLabel}
-                  options={secondaryFilters}
-                  selectedId={secondarySelected}
-                  onSelect={onSecondarySelect}
-                  isOpen={openMenu === "secondary"}
-                  onToggle={() => toggle("secondary")}
-                  fullWidth
-                />
-              )}
-            </View>
-          ) : (
-            <View style={styles.filtersRow}>
-              {hasPrimary && (
-                <FilterDropdown
-                  label={primaryLabel}
-                  options={primaryFilters}
-                  selectedId={primarySelected}
-                  onSelect={onPrimarySelect}
-                  isOpen={openMenu === "primary"}
-                  onToggle={() => toggle("primary")}
-                />
-              )}
-              {hasSecondary && (
-                <FilterDropdown
-                  label={secondaryLabel}
-                  options={secondaryFilters}
-                  selectedId={secondarySelected}
-                  onSelect={onSecondarySelect}
-                  isOpen={openMenu === "secondary"}
-                  onToggle={() => toggle("secondary")}
-                />
-              )}
-            </View>
-          )}
+          <View style={styles.filtersRow}>
+  {hasPrimary && (
+    <FilterDropdown
+      label={primaryLabel}
+      options={primaryFilters}
+      selectedId={primarySelected}
+      onSelect={onPrimarySelect}
+      isOpen={openMenu === "primary"}
+      onToggle={() => toggle("primary")}
+    />
+  )}
+
+  {hasSecondary && (
+    <FilterDropdown
+      label={secondaryLabel}
+      options={secondaryFilters}
+      selectedId={secondarySelected}
+      onSelect={onSecondarySelect}
+      isOpen={openMenu === "secondary"}
+      onToggle={() => toggle("secondary")}
+    />
+  )}
+</View> 
         </View>
       )}
     </View>
@@ -132,10 +108,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
     paddingTop: Platform.OS === "ios" ? hp("1%") : hp("2%"),
-    paddingBottom: hp("0.5%"),
+    paddingBottom: hp("5%"),
     borderBottomWidth: 1,
     borderBottomColor: "#e8ecef",
     zIndex: 10,
+   
+
   },
   filtersSection: {
     paddingHorizontal: wp("3%"),

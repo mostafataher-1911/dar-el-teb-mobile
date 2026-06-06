@@ -1,27 +1,30 @@
+import {
+  AppointmentRequest,
+  appointmentService,
+} from "@/services/appointmentService";
+import { FavoriteTest } from "@/services/favoritesService";
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
   Modal,
-  View,
+  Platform,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-import Toast from "react-native-toast-message";
 import {
-  appointmentService,
-  AppointmentRequest,
-} from "@/services/appointmentService";
-import { FavoriteTest } from "@/services/favoritesService";
-
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from "react-native-responsive-screen";
+import Toast from "react-native-toast-message";
 const LAB_PHONE = "201223649261";
 
 type Props = {
@@ -39,8 +42,11 @@ export default function AppointmentRequestModal({
 }: Props) {
   const [patientName, setPatientName] = useState("");
   const [phone, setPhone] = useState("");
-  const [preferredDate, setPreferredDate] = useState("");
-  const [preferredTime, setPreferredTime] = useState("");
+  const [preferredDate, setPreferredDate] = useState(new Date());
+  const [preferredTime, setPreferredTime] = useState(new Date());
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -58,15 +64,15 @@ export default function AppointmentRequestModal({
 
   const validate = () => {
     if (!patientName.trim()) return "يرجى إدخال الاسم";
-    if (!phone.trim() || phone.trim().length < 10) return "يرجى إدخال رقم هاتف صحيح";
-    if (!preferredDate.trim()) return "يرجى إدخال التاريخ المفضل";
-    if (!preferredTime.trim()) return "يرجى إدخال الوقت المفضل";
+    if (!phone.trim() || phone.trim().length < 10)
+      return "يرجى إدخال رقم هاتف صحيح";
+
     return null;
   };
 
   const resetForm = () => {
-    setPreferredDate("");
-    setPreferredTime("");
+    setPreferredDate(new Date());
+    setPreferredTime(new Date());
     setNotes("");
   };
 
@@ -84,8 +90,12 @@ export default function AppointmentRequestModal({
         testName: test.name,
         patientName: patientName.trim(),
         phone: phone.trim(),
-        preferredDate: preferredDate.trim(),
-        preferredTime: preferredTime.trim(),
+        preferredDate: preferredDate.toISOString().split("T")[0],
+
+        preferredTime: preferredTime.toLocaleTimeString("ar-EG", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
         notes: notes.trim(),
       });
 
@@ -109,7 +119,12 @@ export default function AppointmentRequestModal({
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent
+      onRequestClose={onClose}
+    >
       <KeyboardAvoidingView
         style={styles.overlay}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -126,7 +141,10 @@ export default function AppointmentRequestModal({
             {test.name}
           </Text>
 
-          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
             <Text style={styles.label}>الاسم *</Text>
             <TextInput
               style={styles.input}
@@ -148,22 +166,58 @@ export default function AppointmentRequestModal({
             />
 
             <Text style={styles.label}>التاريخ المفضل *</Text>
-            <TextInput
+
+            <TouchableOpacity
               style={styles.input}
-              value={preferredDate}
-              onChangeText={setPreferredDate}
-              placeholder="مثال: 2026-06-10"
-              textAlign="right"
-            />
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={styles.dateTimeText}>
+                {preferredDate.toLocaleDateString("ar-EG")}
+              </Text>
+            </TouchableOpacity>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={preferredDate}
+                mode="date"
+                minimumDate={new Date()}
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+
+                  if (selectedDate) {
+                    setPreferredDate(selectedDate);
+                  }
+                }}
+              />
+            )}
 
             <Text style={styles.label}>الوقت المفضل *</Text>
-            <TextInput
+
+            <TouchableOpacity
               style={styles.input}
-              value={preferredTime}
-              onChangeText={setPreferredTime}
-              placeholder="مثال: 10:00 صباحاً"
-              textAlign="right"
-            />
+              onPress={() => setShowTimePicker(true)}
+            >
+              <Text style={styles.dateTimeText}>
+                {preferredTime.toLocaleTimeString("ar-EG", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </Text>
+            </TouchableOpacity>
+
+            {showTimePicker && (
+              <DateTimePicker
+                value={preferredTime}
+                mode="time"
+                onChange={(event, selectedTime) => {
+                  setShowTimePicker(false);
+
+                  if (selectedTime) {
+                    setPreferredTime(selectedTime);
+                  }
+                }}
+              />
+            )}
 
             <Text style={styles.label}>ملاحظات</Text>
             <TextInput
@@ -267,5 +321,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: wp("4.5%"),
     fontWeight: "bold",
+  },
+  dateTimeText: {
+    fontSize: wp("4%"),
+    color: "#001D3C",
+    textAlign: "right",
+    fontWeight: "600",
   },
 });

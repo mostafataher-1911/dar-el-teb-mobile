@@ -155,6 +155,7 @@ export default function HomeScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <View style={styles.container}>
         <PageFilters
+        
           searchPlaceholder="ابحث عن نوع التحليل"
           searchValue={searchQuery}
           onSearchChange={handleSearch}
@@ -219,6 +220,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    
   },
   scrollContent: {
     flexGrow: 1,

@@ -141,22 +141,20 @@ export default function OffersScreen() {
 
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
+     
+     
       <View style={styles.container}>
-        <View style={styles.header}>
+         <View style={styles.header}>
           <Text style={styles.headerTitle}>عروض خاصة</Text>
         </View>
-
-        <PageFilters
-          searchPlaceholder="ابحث في العروض"
-          searchValue={searchQuery}
-          onSearchChange={handleSearch}
+         <PageFilters
+        
           primaryLabel="نوع العرض"
           primaryFilters={OFFER_FILTERS}
           primarySelected={offerFilter}
           onPrimarySelect={handleFilter}
         />
-
-        <Text style={styles.resultCount}>النتائج: {resultCount}</Text>
+      
 
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -201,20 +199,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: wp("5%"),
-    paddingVertical: hp("2%"),
     backgroundColor: "#001D3C",
-    borderBottomWidth: 1,
-    borderRadius: 50,
-    borderBottomColor: "#e9ecef",
+     marginHorizontal: wp("4%"),
+     marginTop: hp("1%"),
+     borderRadius: 20,
+     paddingVertical: hp("1.5%"),
+     paddingHorizontal: wp("4%"),
+     alignItems: "center",
+  
   },
   headerTitle: {
-    fontSize: wp("5%"),
-    fontWeight: "bold",
-    color: "#fff",
+    fontWeight: "700",
+     fontSize: wp("5%"),
+     color: "#FFFFFF",
+     textAlign: "center",
   },
   resultCount: {
     textAlign: "right",

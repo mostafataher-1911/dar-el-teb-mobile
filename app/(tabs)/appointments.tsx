@@ -153,9 +153,7 @@ export default function AppointmentsScreen() {
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>طلبات الحجز</Text>
-        {appointments.length > 0 && (
-          <Text style={styles.headerCount}>{appointments.length} طلب</Text>
-        )}
+        
       </View>
 
       {showSuccessBanner && (
@@ -201,9 +199,9 @@ export default function AppointmentsScreen() {
               ]}
             >
               <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle} numberOfLines={2}>
+                {/* <Text style={styles.cardTitle} numberOfLines={2}>
                   {item.testName}
-                </Text>
+                </Text> */}
                 <View
                   style={[
                     styles.badge,
@@ -216,7 +214,7 @@ export default function AppointmentsScreen() {
 
               <Text style={styles.row}>👤 {item.patientName}</Text>
               <Text style={styles.row}>📅 {item.preferredDate} — {item.preferredTime}</Text>
-              <Text style={styles.row}>📞 {item.phone}</Text>
+              <Text style={styles.row}>📞 0{item.phone}</Text>
               {item.notes ? <Text style={styles.notes}>{item.notes}</Text> : null}
 
               {item.status === "pending" && (
@@ -257,16 +255,19 @@ const styles = StyleSheet.create({
     fontSize: wp("4%"),
   },
   header: {
-    backgroundColor: "#001D3C",
-    paddingVertical: hp("2%"),
-    paddingHorizontal: wp("5%"),
-    alignItems: "center",
+     backgroundColor: "#001D3C",
+     marginHorizontal: wp("4%"),
+     marginTop: hp("1%"),
+     borderRadius: 20,
+     paddingVertical: hp("1.5%"),
+     paddingHorizontal: wp("4%"),
+     alignItems: "center",
   },
   headerTitle: {
-    fontSize: wp("6%"),
-    fontWeight: "bold",
-    color: "#fff",
-    textAlign: "center",
+     fontWeight: "700",
+     fontSize: wp("5%"),
+     color: "#FFFFFF",
+     textAlign: "center",
   },
   headerCount: {
     marginTop: 4,
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cardHeader: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
     marginBottom: hp("1%"),

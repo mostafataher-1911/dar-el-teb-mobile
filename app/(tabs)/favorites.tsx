@@ -90,7 +90,7 @@ export default function FavoritesScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>المفضلة</Text>
-        {favorites.length > 0 && (
+        {/* {favorites.length > 0 && (
           <TouchableOpacity
             onPress={() => {
               Alert.alert(
@@ -113,7 +113,7 @@ export default function FavoritesScreen() {
           >
             <Ionicons name="trash-outline" size={20} color="#fff" />
           </TouchableOpacity>
-        )}
+        )} */}
       </View>
 
       {favorites.length === 0 ? (
@@ -191,22 +191,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     backgroundColor: "#001D3C",
-    paddingHorizontal: wp("5%"),
-    paddingVertical: hp("2%"),
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+     marginHorizontal: wp("4%"),
+     marginTop: hp("1%"),
+     borderRadius: 20,
+     paddingVertical: hp("1.5%"),
+     paddingHorizontal: wp("4%"),
+     alignItems: "center",
   },
   headerTitle: {
-    fontSize: wp("6%"),
-    fontWeight: "bold",
-    color: "#fff",
+     fontWeight: "700",
+     fontSize: wp("5%"),
+     color: "#FFFFFF",
+     textAlign: "center",
   },
   clearButton: {
     padding: 8,
