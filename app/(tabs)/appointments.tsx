@@ -20,7 +20,7 @@ import {
   AppointmentRequest,
 } from "@/services/appointmentService";
 
-const LAB_PHONE = "01223649261";
+const LAB_PHONE = "01002281461";
 
 const statusLabel: Record<AppointmentRequest["status"], string> = {
   pending: "قيد المراجعة",
@@ -119,7 +119,7 @@ export default function AppointmentsScreen() {
 
   const handleWhatsApp = async (item: AppointmentRequest) => {
     const message = appointmentService.buildWhatsAppMessage(item);
-    const phone = "201223649261";
+    const phone = "01002281461";
     const appUrl = `whatsapp://send?phone=${phone}&text=${encodeURIComponent(message)}`;
     const webUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     try {

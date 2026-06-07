@@ -596,6 +596,11 @@ const handleLogin = async () => {
               )}
             </TouchableOpacity>
 
+<View style={styles.divider}>
+  <View style={styles.dividerLine} />
+  <Text style={styles.dividerText}>أو</Text>
+  <View style={styles.dividerLine} />
+</View>
             <View style={styles.guestSection}>
               <TouchableOpacity
                 style={styles.guestButton}
@@ -705,22 +710,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
   },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    marginBottom: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#ffffff88",
-  },
-  dividerText: {
-    color: "#ffffff88",
-    paddingHorizontal: 10,
-    fontSize: width * 0.04,
-  },
+ 
   guestButton: {
     flexDirection: "row-reverse",
     alignItems: "center",
@@ -749,6 +739,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     lineHeight: 18,
   },
+
   footer: {
     fontSize: width * 0.04,
     color: "#ffffff88",
@@ -776,4 +767,25 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontSize: width * 0.035,
   },
+  divider: {
+  flexDirection: "row",
+  alignItems: "center",
+  width: "100%",
+  marginVertical: 20,
+},
+
+dividerLine: {
+  flex: 1,
+  height: 1,
+  backgroundColor: "rgba(255,255,255,0.4)",
+},
+
+dividerText: {
+  color: "#FFFFFF",
+  fontSize: width * 0.04,
+  fontWeight: "600",
+  marginHorizontal: 12,
+  backgroundColor: "#005FA1",
+  paddingHorizontal: 8,
+},
 });

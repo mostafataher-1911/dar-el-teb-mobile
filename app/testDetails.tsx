@@ -97,7 +97,7 @@ export default function TestDetailsScreen() {
   };
 
   const handleCall = async () => {
-    const phoneNumber = "01223649261";
+    const phoneNumber = "01002281461";
     try {
       const supported = await Linking.canOpenURL(`tel:${phoneNumber}`);
       if (supported) {

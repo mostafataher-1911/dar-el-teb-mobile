@@ -25,7 +25,7 @@ import {
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen";
 import Toast from "react-native-toast-message";
-const LAB_PHONE = "201223649261";
+const LAB_PHONE = "01002281461";
 
 type Props = {
   visible: boolean;

@@ -90,30 +90,7 @@ export default function FavoritesScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>المفضلة</Text>
-        {/* {favorites.length > 0 && (
-          <TouchableOpacity
-            onPress={() => {
-              Alert.alert(
-                "مسح الكل",
-                "هل تريد إزالة جميع التحاليل من المفضلة؟",
-                [
-                  { text: "إلغاء", style: "cancel" },
-                  {
-                    text: "مسح الكل",
-                    style: "destructive",
-                    onPress: async () => {
-                      await favoritesService.clearFavorites();
-                      loadFavorites();
-                    },
-                  },
-                ]
-              );
-            }}
-            style={styles.clearButton}
-          >
-            <Ionicons name="trash-outline" size={20} color="#fff" />
-          </TouchableOpacity>
-        )} */}
+      
       </View>
 
       {favorites.length === 0 ? (

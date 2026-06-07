@@ -22,7 +22,7 @@ export default function LabLocationScreen() {
 
   const callPhone = async () => {
     try {
-      const url = 'tel:01223649261';
+      const url = 'tel:01002281461';
       const supported = await Linking.canOpenURL(url);
       
       if (supported) {
@@ -49,7 +49,7 @@ export default function LabLocationScreen() {
    
 
         <TouchableOpacity style={styles.contactItem} onPress={callPhone}>
-          <Text style={styles.contactText}>01223649261</Text>
+          <Text style={styles.contactText}>01002281461</Text>
           <Ionicons name="call" size={24} color="#005FA1" />
         </TouchableOpacity>
 
@@ -76,10 +76,13 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#005FA1",
+    color: "#FFFFFF",
     textAlign: "center",
+     backgroundColor: "#001D3C",
+    paddingVertical: 10,
+    borderRadius: 22,
     marginTop: 50,
     marginBottom: 20,
   },
